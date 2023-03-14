@@ -1,0 +1,80 @@
+using System;
+using System.Security.Cryptography;
+
+namespace Proyecto
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool flag = true;
+            int numero_iteracion = 0;
+            List<Paciente> Pacientes= new List<Paciente>();
+
+            while (flag) {
+                Console.WriteLine("============================= MENU =============================\n" +
+                    "           1. Generar nuevo paciente \n" +
+                    "           2. Ingresar informacion clinica\n"+  
+                    "           3. Cambiar de EPS \n" +
+                    "           4. Mostrar promedio de costos\n" +
+                    "           5. Salir ");
+
+                int opcion = Convert.ToInt32(Console.ReadLine());
+                if (opcion == 1) {
+                    Paciente p_x = Paciente.Generar_paciente(Pacientes);
+                }
+                else if (opcion == 2)
+                {
+                    Console.WriteLine("Digite el numero de identificacion del paciente...");
+                    int documento = Convert.ToInt32(Console.ReadLine());
+
+                    foreach (Paciente persona in Pacientes)
+                    {
+                        numero_iteracion++;
+                        if (persona.identificacion == documento)
+                        {
+                            persona.Ingresar_info_clinica();
+                        }
+                        else if (numero_iteracion == Pacientes.Count())
+                        {
+                            Console.WriteLine("No se encontró el usuario!!!! ");
+                        }
+                    }
+                }
+                else if (opcion == 3)
+                {
+                    Console.WriteLine("Digite el numero de identificacion de la persona que desea cambiar de EPS...");
+                    int documento = Convert.ToInt32(Console.ReadLine());
+
+                    
+                    foreach (Paciente persona in Pacientes)
+                    {
+                        numero_iteracion++;
+                        if (persona.identificacion == documento)
+                        {
+                            persona.Cambiar_eps();
+                        }
+                        else if (numero_iteracion == Pacientes.Count())
+                        {
+                            Console.WriteLine("No se encontró el usuario!!!! ");
+                        }
+                    }
+
+                }
+                else if (opcion == 4)
+                {
+                    List<double> lista_de_promedios = new List<double>();
+                    lista_de_promedios =  Paciente.Porcentaje_costos(Pacientes);
+                    Console.WriteLine("El promedio de costos para Sura es        => " + lista_de_promedios[0]);
+                    Console.WriteLine("El promedio de costos para Nueva Eps es   => " + lista_de_promedios[1]);
+                    Console.WriteLine("El promedio de costos para Salud Total es => " + lista_de_promedios[2]);
+                    Console.WriteLine("El promedio de costos para Sanitas es     => " + lista_de_promedios[3]);
+                    Console.WriteLine("El promedio de costos para Savia es       => " + lista_de_promedios[4]);
+                    Console.WriteLine("__________________________________________________________________");
+                }
+                else if (opcion == 5) { flag = false; }
+            }
+
+        }
+    }
+}
