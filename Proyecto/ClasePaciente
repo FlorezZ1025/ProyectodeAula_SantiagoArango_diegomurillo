@@ -326,9 +326,6 @@ class Paciente
         var pacientes_adolescentes = Pacientes.Where(x => (fecha_actual.Year - x.fecha_de_nacimiento.Year) >= 12 &&
         (fecha_actual.Year - x.fecha_de_nacimiento.Year) < 18).ToList();
 
-        //Console.WriteLine(pacientes_adolescentes[0].nombre);
-        //Console.WriteLine((Pacientes[0].fecha_de_nacimiento.Year - fecha_actual.Year));
-
         double porcentaje_pacientes_adolescentes = Calcular_porcentaje(Pacientes, pacientes_adolescentes);
 
         return porcentaje_pacientes_adolescentes;
