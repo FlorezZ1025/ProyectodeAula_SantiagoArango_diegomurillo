@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,15 +12,15 @@ namespace Proyecto;
 
 class Paciente
 {
-    public int numero_unico;
     public int identificacion;
     public string nombre;
     public string apellido_1;
     public string apellido_2;
-    public string fecha_de_nacimiento;
+    public DateTime fecha_de_nacimiento;
+    public string tipo_de_regimen;
     private string eps;
     public string historia_clínica;
-    public int cantidad_Enfermedades;
+    public double cantidad_Enfermedades;
     private string enfermedad_relevante;
     public string afiliacion;
     public int costo_Tratamiento;
@@ -31,13 +34,14 @@ class Paciente
     }
     public string Enfermedad_relevante { get => enfermedad_relevante; set => enfermedad_relevante = value; }
 
-    public Paciente(int identificacion, string nombre, string apellido_1, string apellido_2, string fecha_de_nacimiento)
+    public Paciente(int identificacion, string nombre, string apellido_1, string apellido_2, DateTime fecha_de_nacimiento)
     {
         this.identificacion = identificacion;
         this.nombre = nombre;
         this.apellido_1 = apellido_1;
         this.apellido_2 = apellido_2;
         this.fecha_de_nacimiento = fecha_de_nacimiento;
+        this.tipo_de_regimen = "";
         this.Eps = "";
         this.historia_clínica = "";
         this.cantidad_Enfermedades = 0;
@@ -45,42 +49,60 @@ class Paciente
         this.afiliacion = "";
         this.costo_Tratamiento = 0;
         this.tiempo_en_eps = 0;
-        this.numero_unico ++;
     }
 
     public static Paciente Generar_paciente(List<Paciente> lista_pacientes)
     {
         Console.WriteLine("-------------------------------------------------");
+
         Console.Write("Ingrese su identificación    ==> ");
         int id = Convert.ToInt32(Console.ReadLine().Trim());
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese su nombre            ==> ");
         string nombre = Console.ReadLine().Trim();
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese su primer apellido   ==> ");
         string apellido_1 = Console.ReadLine().Trim();
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese su segundo apellido  ==> ");
         string apellido_2 = Console.ReadLine().Trim();
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese su año de nacimiento ==> ");
         int año = Convert.ToInt32(Console.ReadLine().Trim());
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese su mes de nacimiento ==> ");
         int mes = Convert.ToInt32(Console.ReadLine().Trim());
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese su dia de nacimiento ==> ");
         int dia = Convert.ToInt32(Console.ReadLine().Trim());
+        Console.WriteLine("-------------------------------------------------");
 
         DateTime fecha_nacimiento = new DateTime(año, mes, dia);
 
-        Paciente P_x = new Paciente(id, nombre, apellido_1, apellido_2, fecha_nacimiento.ToShortDateString());
+        Paciente P_x = new Paciente(id, nombre, apellido_1, apellido_2, fecha_nacimiento.Date);
         lista_pacientes.Add(P_x);
         return P_x;
     }
     public void Ingresar_info_clinica()
     {
         int opcion;
+
+        Console.WriteLine("------------------------------------------------------");
+        Console.Write("Ingrese su tipo de regimen\n" +
+                "0) Contributivo \n" +
+                "1) Subsidiado \n ");
+
+        opcion = Convert.ToInt32(Console.ReadLine());
+
+        if (opcion == 0) { this.tipo_de_regimen = "Contributivo"; }
+        else if (opcion == 1) { this.tipo_de_regimen = "Subsidiado"; }
+
 
         Console.WriteLine("------------------------------------------------------");
         Console.Write("Ingrese su EPS actual \n" +
@@ -92,45 +114,58 @@ class Paciente
 
         opcion = Convert.ToInt32(Console.ReadLine());
 
-        if (opcion == 0){this.Eps = "Sura";}
-        else if (opcion == 1){this.Eps = "Nueva EPS";}
-        else if (opcion == 2){this.Eps = "Salud Total";}
-        else if (opcion == 3){this.Eps = "Sanitas";}
-        else if (opcion == 4){this.Eps = "Savia";}
-        else if (opcion > 4) {Console.WriteLine("Opción no válida!!");}
-        
+        if (opcion == 0) { this.Eps = "Sura"; }
+        else if (opcion == 1) { this.Eps = "Nueva EPS"; }
+        else if (opcion == 2) { this.Eps = "Salud Total"; }
+        else if (opcion == 3) { this.Eps = "Sanitas"; }
+        else if (opcion == 4) { this.Eps = "Savia"; }
+        else if (opcion > 4) { Console.WriteLine("Opción no válida!!"); }
+        Console.WriteLine("--------");
+
 
         Console.Write("Cuantos lleva con su EPS actual? (meses)      => ");
         this.tiempo_en_eps = Convert.ToInt32(Console.ReadLine().Trim());
+        Console.WriteLine("--------");
+
 
         Console.WriteLine("Ingrese su historia clinica               => ");
         this.historia_clínica = Console.ReadLine();
+        Console.WriteLine("--------");
+
 
         Console.Write("Ingrese su cantidad total de enfermedades => ");
         this.cantidad_Enfermedades = Convert.ToInt32(Console.ReadLine().Trim());
+        Console.WriteLine("--------");
+        if (this.cantidad_Enfermedades > 0)
+        {
+            Console.Write("Ingrese su enfermedad mas grave (sin tildes )    => ");
+            this.Enfermedad_relevante = Console.ReadLine();
+            Console.WriteLine("--------");
 
-        Console.Write("Ingrese su enfermedad mas grave           => ");
-        this.Enfermedad_relevante = Console.ReadLine().Trim();
+        }
+
+
 
         Console.WriteLine("Tipo de afiliacion\n" +
             "0) Cotizante\n" +
             "1) Beneficiario");
         Console.Write("==> ");
-        opcion = Convert.ToInt32(Console.ReadLine());
-        if  (opcion == 0 ) {this.afiliacion = "Cotizante"; }
 
-        else if(opcion==1) {this.afiliacion="Beneficiario";}
+        opcion = Convert.ToInt32(Console.ReadLine());
+        if (opcion == 0) { this.afiliacion = "Cotizante"; }
+        else if (opcion == 1) { this.afiliacion = "Beneficiario"; }
+        Console.WriteLine("--------");
 
         Console.Write("Ingrese el costo de su tratamiento ==> ");
         this.costo_Tratamiento = Convert.ToInt32(Console.ReadLine().Trim());
-   
+
     }
     public void Cambiar_eps()
     {
         Console.WriteLine("----------------------------------------------------------------");
-        if(this.tiempo_en_eps >= 3)
+        if (this.tiempo_en_eps >= 3)
         {
-            Console.WriteLine("Cordial saludo " + this.nombre +"\n");
+            Console.WriteLine("Cordial saludo " + this.nombre + "\n");
             Console.WriteLine("" +
                 "0) Sura\n" +
                 "1) Nueva EPS\n" +
@@ -140,23 +175,23 @@ class Paciente
             Console.Write("Ingrese la eps a la que se desea cambiar ==> ");
 
             int proxima_eps = Convert.ToInt32(Console.ReadLine());
-            if (proxima_eps == 0 )
+            if (proxima_eps == 0)
             {
                 this.Eps = "Sura";
             }
-            else if(proxima_eps == 1 )
+            else if (proxima_eps == 1)
             {
                 this.Eps = "Nueva EPS";
             }
-            else if(proxima_eps == 2 )
+            else if (proxima_eps == 2)
             {
                 this.Eps = "Salud Total";
             }
-            else if(proxima_eps == 3 )
+            else if (proxima_eps == 3)
             {
                 this.Eps = "Sanitas";
             }
-            else if(proxima_eps == 4 )
+            else if (proxima_eps == 4)
             {
                 this.Eps = "Savia";
             }
@@ -168,17 +203,18 @@ class Paciente
         else
         {
             Console.WriteLine("Para cambiar de EPS debe llevar mas de tres meses en su EPS actual.");
+            Console.WriteLine("--------");
         }
-   
+
     }
 
     public static List<double> Porcentaje_costos(List<Paciente> Lista_de_pacientes)
     {
-        List<int> Costos_Sura       = new List<int>();
-        List<int> Costos_NuevaEPS   = new List<int>();
+        List<int> Costos_Sura = new List<int>();
+        List<int> Costos_NuevaEPS = new List<int>();
         List<int> Costos_SaludTotal = new List<int>();
-        List<int> Costos_Sanitas    = new List<int>();
-        List<int> Costos_Savia      = new List<int>();
+        List<int> Costos_Sanitas = new List<int>();
+        List<int> Costos_Savia = new List<int>();
         List<double> lista_promedios = new List<double>();
 
         double promedio_Sura = 0;
@@ -189,18 +225,18 @@ class Paciente
 
         foreach (Paciente paciente in Lista_de_pacientes)
         {
-            if (paciente.Eps == "Sura")             { Costos_Sura.Add(paciente.costo_Tratamiento); }
-            else if (paciente.Eps == "Nueva EPS")   { Costos_NuevaEPS.Add(paciente.costo_Tratamiento);}
+            if (paciente.Eps == "Sura") { Costos_Sura.Add(paciente.costo_Tratamiento); }
+            else if (paciente.Eps == "Nueva EPS") { Costos_NuevaEPS.Add(paciente.costo_Tratamiento); }
             else if (paciente.Eps == "Salud Total") { Costos_SaludTotal.Add(paciente.costo_Tratamiento); }
-            else if (paciente.Eps == "Sanitas")     { Costos_Sanitas.Add(paciente.costo_Tratamiento); }
-            else if (paciente.Eps == "Savia")       { Costos_Savia.Add(paciente.costo_Tratamiento); }
+            else if (paciente.Eps == "Sanitas") { Costos_Sanitas.Add(paciente.costo_Tratamiento); }
+            else if (paciente.Eps == "Savia") { Costos_Savia.Add(paciente.costo_Tratamiento); }
 
         }
-        promedio_Sura       = Calcular_promedio(Costos_Sura);
-        promedio_NuevaEPS   = Calcular_promedio(Costos_NuevaEPS);
+        promedio_Sura = Calcular_promedio(Costos_Sura);
+        promedio_NuevaEPS = Calcular_promedio(Costos_NuevaEPS);
         promedio_SaludTotal = Calcular_promedio(Costos_SaludTotal);
-        promedio_Sanitas    = Calcular_promedio(Costos_Sanitas);
-        promedio_Savia      = Calcular_promedio(Costos_Savia);
+        promedio_Sanitas = Calcular_promedio(Costos_Sanitas);
+        promedio_Savia = Calcular_promedio(Costos_Savia);
 
         lista_promedios.Add(promedio_Sura);
         lista_promedios.Add(promedio_NuevaEPS);
@@ -215,11 +251,191 @@ class Paciente
         double total = 0;
         for (int i = 0; i < lista_costos.Count(); i++)
         {
-            total+= lista_costos[i];
+            total += lista_costos[i];
         }
         if (lista_costos.Count() > 0) { return total / lista_costos.Count(); }
         else { return 0; }
-        
 
+
+    }
+
+    public static List<double> Calcular_costos_por_eps(List<Paciente> Pacientes)
+    {
+
+        double total_costos_Sura = 0;
+        double total_costos_NuevaEPS = 0;
+        double total_costos_SaludTotal = 0;
+        double total_costos_Sanitas = 0;
+        double total_costos_Savia = 0;
+
+        var costos_sura = Pacientes.Where(x => x.Eps == "Sura").ToList();
+        var costos_nueva_eps = Pacientes.Where(x => x.Eps == "Nueva EPS").ToList();
+        var costos_salud_total = Pacientes.Where(x => x.Eps == "Salud Total").ToList();
+        var costos_sanitas = Pacientes.Where(x => x.Eps == "Sanitas").ToList();
+        var costos_savia = Pacientes.Where(x => x.Eps == "Savia").ToList();
+
+        total_costos_Sura = Sumar_costos(costos_sura);
+        total_costos_NuevaEPS = Sumar_costos(costos_nueva_eps);
+        total_costos_SaludTotal = Sumar_costos(costos_salud_total);
+        total_costos_Sanitas = Sumar_costos(costos_sanitas);
+        total_costos_Savia = Sumar_costos(costos_savia);
+        List<double> Costos_totales = new List<double> { total_costos_Sura, total_costos_NuevaEPS, total_costos_SaludTotal, total_costos_Sanitas, total_costos_Savia };
+
+        return Costos_totales;
+    }
+    private static double Sumar_costos(List<Paciente> pacientes)
+    {
+        double total = 0;
+        foreach (Paciente paciente in pacientes)
+        {
+            total += paciente.costo_Tratamiento;
+        }
+        return total;
+    }
+
+    public static double Porcentaje_sin_enfermedades(List<Paciente> Pacientes)
+    {
+        double porcentaje_pacientes_sin_enfermedades;
+
+        var pacientes_sin_enfermedades = Pacientes.Where(x => x.cantidad_Enfermedades == 0).ToList();
+
+        porcentaje_pacientes_sin_enfermedades = Calcular_porcentaje(Pacientes, pacientes_sin_enfermedades);
+        Console.WriteLine(porcentaje_pacientes_sin_enfermedades);
+
+        return porcentaje_pacientes_sin_enfermedades;
+
+    }
+    private static double Calcular_porcentaje(List<Paciente> pacientes, List<Paciente> pacientes_sin)
+    {
+        if (pacientes.Count == 0)
+        {
+            Console.WriteLine("Paila");
+            return 0;
+        }
+        else
+        {
+            double pacientes_totales = Convert.ToDouble(pacientes.Count);
+            double pacientes_especificos = Convert.ToDouble(pacientes_sin.Count);
+
+            return Math.Round(((pacientes_especificos / pacientes_totales) * 100.0), 2);
+        }
+
+    }
+    public static double Porcentaje_adolescentes(List<Paciente> Pacientes,DateTime fecha_actual)
+    {
+        var pacientes_adolescentes = Pacientes.Where(x => (fecha_actual.Year - x.fecha_de_nacimiento.Year) >= 12 &&
+        (fecha_actual.Year - x.fecha_de_nacimiento.Year) < 18).ToList();
+
+        //Console.WriteLine(pacientes_adolescentes[0].nombre);
+        //Console.WriteLine((Pacientes[0].fecha_de_nacimiento.Year - fecha_actual.Year));
+
+        double porcentaje_pacientes_adolescentes = Calcular_porcentaje(Pacientes, pacientes_adolescentes);
+
+        return porcentaje_pacientes_adolescentes;
+    }
+   
+        public static double Porcentaje_jovenes(List<Paciente> Pacientes,DateTime fecha_actual)
+        {
+
+            var pacientes_jovenes      = Pacientes.Where(x => (fecha_actual.Year - x.fecha_de_nacimiento.Year) >= 18 &&
+            (fecha_actual.Year - x.fecha_de_nacimiento.Year) < 30).ToList();
+
+            double porcentaje_pacientes_jovenes = Calcular_porcentaje(Pacientes, pacientes_jovenes);
+
+            return porcentaje_pacientes_jovenes;
+        }
+
+        public static double Porcentaje_adultos(List<Paciente> Pacientes, DateTime fecha_actual)
+        {
+
+            var pacientes_adultos = Pacientes.Where(x => (fecha_actual.Year - x.fecha_de_nacimiento.Year) >= 30 &&
+            (fecha_actual.Year - x.fecha_de_nacimiento.Year) < 55).ToList();
+
+            double porcentaje_pacientes_adulto = Calcular_porcentaje(Pacientes, pacientes_adultos);
+
+            return porcentaje_pacientes_adulto;
+        }
+
+        public static double Porcentaje_adultos_mayores(List<Paciente> Pacientes, DateTime fecha_actual)
+        {
+
+            var pacientes_adultos_mayores = Pacientes.Where(x => (fecha_actual.Year - x.fecha_de_nacimiento.Year) >= 55 && 
+            (fecha_actual.Year - x.fecha_de_nacimiento.Year) < 75).ToList();
+
+            double porcentaje_pacientes_adultos_mayores = Calcular_porcentaje(Pacientes, pacientes_adultos_mayores);
+
+            return porcentaje_pacientes_adultos_mayores;
+        }
+
+        public static double Porcentaje_ancianos(List<Paciente> Pacientes, DateTime fecha_actual)
+        {
+
+            var pacientes_ancianos = Pacientes.Where(x => (fecha_actual.Year - x.fecha_de_nacimiento.Year) >= 75).ToList();
+
+            double porcentaje_pacientes_ancianos = Calcular_porcentaje(Pacientes, pacientes_ancianos);
+
+            return porcentaje_pacientes_ancianos;
+        }
+  
+    public static double Porcentaje_regimen_contributivo(List<Paciente> Pacientes)
+    {
+        double porcentaje_regimen_contributivo;
+
+        var pacientes_regimen_contributivo = Pacientes.Where(x => x.tipo_de_regimen == "Contributivo").ToList();
+
+        porcentaje_regimen_contributivo = Calcular_porcentaje(Pacientes, pacientes_regimen_contributivo);
+
+        return porcentaje_regimen_contributivo;
+    }
+
+    public static double Porcentaje_regimen_subsidiado(List<Paciente> Pacientes)
+    {
+        double porcentaje_regimen_subsidiado;
+
+        var pacientes_regimen_subsidiado = Pacientes.Where(x => x.tipo_de_regimen == "Subsidiado").ToList();
+
+        porcentaje_regimen_subsidiado = Calcular_porcentaje(Pacientes, pacientes_regimen_subsidiado);
+
+        return porcentaje_regimen_subsidiado;
+    }
+
+    public static double Porcentaje_afiliacion_cotizante(List<Paciente> Pacientes)
+    {
+        double porcentaje_afiliacion_cotizante;
+
+        var pacientes_cotizantes = Pacientes.Where(x => x.afiliacion == "Cotizante").ToList();
+
+        porcentaje_afiliacion_cotizante = Calcular_porcentaje(Pacientes, pacientes_cotizantes);
+
+        return porcentaje_afiliacion_cotizante;
+    }
+
+    public static double Porcentaje_afiliacion_beneficiarios(List<Paciente> Pacientes)
+    {
+        double porcentaje_afiliacion_beneficiarios;
+
+        var pacientes_beneficiarios = Pacientes.Where(x => x.afiliacion == "Beneficiario").ToList();
+
+        porcentaje_afiliacion_beneficiarios = Calcular_porcentaje(Pacientes, pacientes_beneficiarios);
+
+        return porcentaje_afiliacion_beneficiarios;
+    }
+
+    public static double Total_pacientes_con_cancer(List<Paciente> Pacientes)
+    {
+        double total_pacientes_con_cancer;
+
+        var pacientes_con_cancer = Pacientes.Where(x => x.enfermedad_relevante.Trim().ToLower() == "cancer").ToList();
+
+        total_pacientes_con_cancer = pacientes_con_cancer.Count();
+
+        return total_pacientes_con_cancer;
+    }
+
+    public static List<Paciente> Paciente_mayor_costo_tratamiento(List<Paciente> Pacientes)
+    {
+        var paciente_mayor_costo = Pacientes.Where(x => x.costo_Tratamiento == (Pacientes.Max(y => y.costo_Tratamiento))).ToList();
+
+        return paciente_mayor_costo;
     }
 }
