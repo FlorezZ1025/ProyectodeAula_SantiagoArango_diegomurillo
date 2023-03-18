@@ -13,11 +13,18 @@ namespace Proyecto
 
             while (flag) {
                 Console.WriteLine("============================= MENU =============================\n" +
-                    "           1. Generar nuevo paciente \n" +
-                    "           2. Ingresar informacion clinica\n"+  
-                    "           3. Cambiar de EPS \n" +
-                    "           4. Mostrar promedio de costos\n" +
-                    "           5. Salir ");
+                    "           1.  Generar nuevo paciente \n" +
+                    "           2.  Ingresar informacion clinica\n"+  
+                    "           3.  Cambiar de EPS \n" +
+                    "           4.  Mostrar promedio de costos\n" +
+                    "           5.  Mostrar total de costos \n" +
+                    "           6.  Mostrar porcentaje de pacientes sin enfermedades \n" +
+                    "           7.  Mostrar porcentaje de pacientes por rango de edad \n"+
+                    "           8.  Mostrar porcentaje de pacientes por régimen \n" +
+                    "           9.  Mostrar porcentaje de pacientes por tipo de afiliación \n" +
+                    "           10. Mostrar total de pacientes que su enfermedad más relevante es el cáncer \n" +
+                    "           11. Mostrar paciente con mayor costo de tratamiento \n" +
+                    "           12. Salir \n");
 
                 int opcion = Convert.ToInt32(Console.ReadLine());
                 if (opcion == 1) {
@@ -27,37 +34,42 @@ namespace Proyecto
                 {
                     Console.WriteLine("Digite el numero de identificacion del paciente...");
                     int documento = Convert.ToInt32(Console.ReadLine());
+                    int bandera = 0;
 
                     foreach (Paciente persona in Pacientes)
                     {
-                        numero_iteracion++;
                         if (persona.identificacion == documento)
                         {
+                            bandera += 1;
+                            Console.WriteLine(bandera+"en el for");
                             persona.Ingresar_info_clinica();
                         }
-                        else if (numero_iteracion == Pacientes.Count())
-                        {
-                            Console.WriteLine("No se encontró el usuario!!!! ");
-                        }
                     }
+                    Console.WriteLine(bandera);
+                    if (bandera == 0)
+                        {
+                        Console.WriteLine("No se encontró el usuario!!!! ");
+                        }
                 }
                 else if (opcion == 3)
                 {
                     Console.WriteLine("Digite el numero de identificacion de la persona que desea cambiar de EPS...");
                     int documento = Convert.ToInt32(Console.ReadLine());
+                    int bandera = 0;
 
-                    
                     foreach (Paciente persona in Pacientes)
                     {
-                        numero_iteracion++;
+                        
                         if (persona.identificacion == documento)
                         {
+                            bandera += 1;
                             persona.Cambiar_eps();
                         }
-                        else if (numero_iteracion == Pacientes.Count())
-                        {
-                            Console.WriteLine("No se encontró el usuario!!!! ");
-                        }
+                    }
+                    Console.WriteLine(bandera);
+                    if (bandera == 0)
+                    {
+                        Console.WriteLine("No se encontró el usuario!!!! ");
                     }
 
                 }
@@ -72,7 +84,82 @@ namespace Proyecto
                     Console.WriteLine("El promedio de costos para Savia es       => " + lista_de_promedios[4]);
                     Console.WriteLine("__________________________________________________________________");
                 }
-                else if (opcion == 5) { flag = false; }
+                else if (opcion == 5) 
+                {
+                    List<double> lista_de_costos = new List<double> ();
+                    lista_de_costos = Paciente.Calcular_costos_por_eps(Pacientes);
+                    Console.WriteLine("El total de costos para Sura es        => " + lista_de_costos[0]);
+                    Console.WriteLine("El total de costos para Nueva Eps es   => " + lista_de_costos[1]);
+                    Console.WriteLine("El total de costos para Salud Total es => " + lista_de_costos[2]);
+                    Console.WriteLine("El total de costos para Sanitas es     => " + lista_de_costos[3]);
+                    Console.WriteLine("El total de costos para Savia es       => " + lista_de_costos[4]);
+                    Console.WriteLine("__________________________________________________________________");
+
+
+
+                }
+                else if (opcion == 6)
+                {
+                    double porcentaje = Paciente.Porcentaje_sin_enfermedades(Pacientes);
+                    Console.WriteLine($"El porcentaje de pacientes sin enfermedades es  => {porcentaje} %");
+                }
+                else if (opcion == 7)
+                {
+                    DateTime fecha_actual = DateTime.Now.Date;
+
+                    double porcentaje_adolescentes    = Paciente.Porcentaje_adolescentes   (Pacientes, fecha_actual);
+                    double porcentaje_joven           = Paciente.Porcentaje_jovenes        (Pacientes, fecha_actual);
+                    double porcentaje_adultos         = Paciente.Porcentaje_adultos        (Pacientes, fecha_actual);
+                    double porcentaje_adultos_mayores = Paciente.Porcentaje_adultos_mayores(Pacientes, fecha_actual);
+                    double porcentaje_ancianos        = Paciente.Porcentaje_ancianos       (Pacientes, fecha_actual);
+
+                    
+                    Console.WriteLine($"El porcentaje de pacientes que son adolescentes es    => {porcentaje_adolescentes} % ");
+                    Console.WriteLine($"El porcentaje de pacientes que son jovenes es         => {porcentaje_joven}  % ");
+                    Console.WriteLine($"El porcentaje de pacientes que son adultos es         => {porcentaje_adultos} % ");
+                    Console.WriteLine($"El porcentaje de pacientes que son adultos mayores es => {porcentaje_adultos_mayores} % ");
+                    Console.WriteLine($"El porcentaje de pacientes que son ancianos es        => {porcentaje_ancianos} % ");
+
+                }
+                else if (opcion == 8)
+                {
+                    double porcentaje_regimen_contributivo = Paciente.Porcentaje_regimen_contributivo(Pacientes);
+                    double porcentaje_regimen_subsidiado = Paciente.Porcentaje_regimen_subsidiado(Pacientes);
+
+                    Console.WriteLine($"El porcentaje de pacientes por régimen contributivo es => {porcentaje_regimen_contributivo} % ");
+                    Console.WriteLine($"El porcentaje de pacientes por régimen subsidiado es   => {porcentaje_regimen_subsidiado} % ");
+
+                }
+
+                else if (opcion == 9)
+                {
+                    double porcentaje_cotizantes = Paciente.Porcentaje_afiliacion_cotizante(Pacientes);
+                    double porcentaje_beneficiarios = Paciente.Porcentaje_afiliacion_beneficiarios(Pacientes);
+
+                    Console.WriteLine($"El porcentaje de pacientes cotizantes es      => {porcentaje_cotizantes} % ");
+                    Console.WriteLine($"El porcentaje de pacientes beneficiarios es   => {porcentaje_beneficiarios} % ");
+
+
+                }
+
+                else if (opcion == 10)
+                {
+                    double total_pacientes_con_cancer = Paciente.Total_pacientes_con_cancer(Pacientes);
+
+                    Console.WriteLine($"El total de pacientes que su enfermedad más revelevante es el cáncer es  => {total_pacientes_con_cancer} ");
+                }
+                    
+                else if (opcion == 11)
+                {
+                    List<Paciente> paciente_mayor = Paciente.Paciente_mayor_costo_tratamiento(Pacientes);
+
+                    Console.WriteLine($"El paciente con mayor costo de tratamiento es => {paciente_mayor[0].nombre} {paciente_mayor[0].apellido_1} con un costo de {paciente_mayor[0].costo_Tratamiento}");
+                }
+
+                else if (opcion == 12)
+                {
+                    flag = false;
+                }
             }
 
         }
